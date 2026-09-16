@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Авторынок Душанбе</title>
+<style>
+:root{--primary:#e74c3c;--dark:#2c3e50;--success:#27ae60;--gray:#7f8c8d}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif}
+body{background:#f8f9fa;color:#333}header{background:var(--dark);color:#fff;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;gap:12px}.logo{font-size:24px;font-weight:bold;cursor:pointer}.header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border:0;background:var(--primary);color:#fff;padding:11px 20px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:16px}.btn:hover{background:#c0392b}.btn:disabled{background:var(--gray);cursor:not-allowed}.btn.gray{background:var(--gray)}.btn.gray:hover{background:#636e72}.btn.dark{background:var(--dark)}
+.container{max-width:1200px;margin:30px auto;padding:0 20px}.view{display:none}.view.active{display:block}.filters{background:#fff;padding:20px;border-radius:10px;margin-bottom:25px;display:flex;flex-wrap:wrap;gap:15px;align-items:end;box-shadow:0 2px 8px rgba(0,0,0,.06)}.filter-item{display:flex;flex-direction:column;gap:6px}.filter-item label{font-weight:bold}.filter-item select{min-width:200px;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:15px}
+.car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}.car-card{background:#fff;overflow:hidden;border-radius:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.1);transition:.2s}.car-card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.15)}.car-card img{width:100%;height:200px;object-fit:cover;background:#eee}.car-info{padding:15px}.car-price{color:var(--success);font-size:22px;font-weight:bold;margin-bottom:5px}.car-title{font-size:18px;margin-bottom:10px}.badge{display:inline-block;padding:5px 9px;border-radius:5px;color:#fff;font-size:12px;font-weight:bold;margin-bottom:10px}.badge-dealer{background:#3498db}.badge-private{background:#f39c12}.seller-info{color:var(--dark);margin-top:8px;font-size:14px;font-weight:500}.location-info{color:var(--gray);margin-top:6px;font-size:14px}.empty-state,.loading-state{grid-column:1/-1;background:#fff;padding:60px 20px;text-align:center;color:var(--gray);border-radius:10px}
+.details-container{background:#fff;padding:30px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.1);display:flex;flex-wrap:wrap;gap:30px}.details-img{flex:1;min-width:300px}.details-img img{width:100%;max-height:650px;object-fit:contain;border-radius:10px;background:#eee}.details-info{flex:1;min-width:300px}.specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;background:#f8f9fa;padding:20px;margin:20px 0;border-radius:10px}.spec-item{padding-bottom:6px;border-bottom:1px solid #ddd}.spec-label{display:block;color:var(--gray);font-size:13px}.spec-value{font-size:16px;font-weight:bold}.contact-box{background:#f1f2f6;padding:20px;border-radius:10px;border-left:5px solid var(--primary);margin-top:20px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form-group{margin-bottom:15px}.form-group label{display:block;margin-bottom:6px;font-weight:bold;font-size:14px}.form-group input,.form-group select{width:100%;padding:11px;border:1px solid #ddd;border-radius:6px;font-size:15px}.form-group input[readonly]{background:#f4f4f4}.file-hint{margin-top:5px;font-size:12px;color:var(--gray)}.photo-preview{display:none;width:250px;height:180px;margin-top:10px;border-radius:8px;object-fit:cover;border:1px solid #ddd}.photo-preview.show{display:block}.status{display:none;margin-bottom:20px;padding:13px 15px;border-radius:8px}.status.show{display:block}.status.success{background:#eaf8ef;color:#1e8449}.status.error{background:#fdecea;color:#922b21}.status.info{background:#eaf6ff;color:#21618c}.ai-message{display:none;margin-top:10px;padding:10px 12px;border-radius:6px;font-size:13px;font-weight:600}.ai-message.show{display:block}.ai-message.loading{background:#eaf6ff;color:#21618c}.ai-message.success{background:#eaf8ef;color:#1e8449}.ai-message.error{background:#fdecea;color:#922b21}.publish-message{margin-top:12px;font-weight:bold}.storage-error{max-width:800px;margin:30px auto;padding:20px;background:#fdecea;border-left:5px solid #e74c3c;border-radius:8px;color:#922b21}.auth-box{max-width:520px;margin:auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.1)}.auth-tabs{display:flex;gap:10px;margin:20px 0}.auth-tabs button{flex:1}.hidden{display:none!important}.profile-box{max-width:800px;margin:auto}.profile-head{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}.account-pill{background:#34495e;border-radius:8px;padding:9px 12px;font-size:14px}
+@media(max-width:768px){header{flex-wrap:wrap}.logo{font-size:20px}.form-row{grid-template-columns:1fr}.specs-grid{grid-template-columns:1fr}.filter-item,.filter-item select{width:100%}.filters{align-items:stretch}.details-container{padding:20px}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo" onclick="switchView('home')">🚗 Авто Душанбе</div>
+<div class="header-actions">
+<button class="btn" onclick="requireAuthForAdd()">+ Разместить авто</button>
+<div id="account-area"></div>
+</div>
+</header>
+
+<div class="container">
+<div id="view-home" class="view active">
+<div id="status-box" class="status"></div>
+<div class="filters">
+<div class="filter-item"><label>Марка:</label><select id="filter-brand" onchange="renderCars()"><option value="all">Все марки</option></select></div>
+<div class="filter-item"><label>Район:</label><select id="filter-district" onchange="renderCars()"><option value="all">Все районы</option><option>Сино</option><option>Исмоили Сомони</option><option>Фирдавси</option><option>Шохмансур</option></select></div>
+<div class="filter-item"><label>Место:</label><select id="filter-location" onchange="renderCars()"><option value="all">Все места</option><option>82 мкр</option><option>33 мкр</option><option>46 мкр</option><option>61 мкр</option><option>Зарафшон</option><option>Гипрозем</option><option>Корвон</option><option>Садоводческий</option><option>Центр Душанбе</option><option>Рудаки</option><option>Айни</option><option>Карабаева</option><option>Джаббора Расулова</option><option>Шерози</option><option>Другое</option></select></div>
+</div>
+<div class="car-grid" id="car-list"><div class="loading-state">Загрузка объявлений...</div></div>
+</div>
+
+<div id="view-details" class="view"><button class="btn gray" onclick="switchView('home')" style="margin-bottom:20px">← Назад к списку</button><div id="details-content" class="details-container"></div></div>
+
+<div id="view-auth" class="view">
+<div class="auth-box">
+<h2>Аккаунт</h2><p style="color:var(--gray);margin-top:8px">Зарегистрируйтесь или войдите, чтобы размещать объявления.</p>
+<div class="auth-tabs"><button id="tab-login" class="btn" type="button" onclick="showAuthMode('login')">Войти</button><button id="tab-register" class="btn gray" type="button" onclick="showAuthMode('register')">Регистрация</button></div>
+<div id="auth-login">
+<div class="form-group"><label>Email</label><input id="login-email" type="email" autocomplete="email" required></div>
+<div class="form-group"><label>Пароль</label><input id="login-password" type="password" autocomplete="current-password" required></div>
+<button class="btn" style="width:100%" onclick="loginUser()">Войти</button>
+<button class="btn dark" style="width:100%;margin-top:10px" onclick="resetPassword()">Забыли пароль?</button>
+</div>
+<div id="auth-register" class="hidden">
+<div class="form-group"><label>Ваше имя</label><input id="reg-name" maxlength="50" placeholder="Иван Иванов"></div>
+<div class="form-group"><label>Телефон</label><input id="reg-phone" maxlength="20" placeholder="+992..."></div>
+<div class="form-group"><label>Email</label><input id="reg-email" type="email" autocomplete="email"></div>
+<div class="form-group"><label>Пароль</label><input id="reg-password" type="password" autocomplete="new-password" placeholder="Минимум 6 символов"></div>
+<button class="btn" style="width:100%" onclick="registerUser()">Создать аккаунт</button>
+</div>
+<p id="auth-message" style="margin-top:14px;font-weight:bold"></p>
+</div>
+</div>
+
+<div id="view-profile" class="view">
+<div class="profile-box details-container" style="display:block">
+<div class="profile-head"><div><h2>👤 Мой аккаунт</h2><p style="color:var(--gray);margin-top:8px">Управление профилем и твоими объявлениями.</p></div><button class="btn gray" onclick="logoutUser()">Выйти</button></div>
+<hr style="margin:20px 0;border:1px solid #eee">
+<div class="form-row"><div class="form-group"><label>Имя</label><input id="profile-name" maxlength="50"></div><div class="form-group"><label>Телефон</label><input id="profile-phone" maxlength="20"></div></div>
+<div class="form-group"><label>Email</label><input id="profile-email" readonly></div>
+<button class="btn" onclick="saveProfile()">Сохранить профиль</button>
+<p id="profile-message" style="margin-top:12px;font-weight:bold"></p>
+<hr style="margin:20px 0;border:1px solid #eee">
+<h3>Мои объявления</h3><p id="my-count" style="color:var(--gray);margin-top:8px"></p>
+</div>
+</div>
+
+<div id="view-add" class="view">
+<button class="btn gray" onclick="switchView('home')" style="margin-bottom:20px">← Назад</button>
+<div class="details-container" style="display:block;max-width:800px;margin:auto">
+<h2>Добавить автомобиль</h2><p style="color:var(--gray);margin:8px 0 20px">Заполните данные автомобиля. Объявление после публикации появится у всех посетителей сайта.</p>
+<form id="car-form" onsubmit="handleAddCar(event)">
+<div class="form-row"><div class="form-group"><label>Марка</label><select id="add-brand" required onchange="updateModels()"></select></div><div class="form-group"><label>Модель</label><select id="add-model" required></select></div></div>
+<div class="form-row"><div class="form-group"><label>Цена (сомони)</label><input id="add-price" type="number" min="1000" max="10000000" step="1" required></div><div class="form-group"><label>Год выпуска</label><input id="add-year" type="number" min="1950" max="2027" step="1" required></div></div>
+<div class="form-row"><div class="form-group"><label>Тип кузова</label><select id="add-body" required><option>Легковая (Седан)</option><option>Хэтчбек</option><option>Лифтбек</option><option>Фастбек</option><option>Универсал</option><option>Купе</option><option>Кабриолет</option><option>Родстер</option><option>Спорткар</option><option>Внедорожник (Джип)</option><option>Внедорожник (Кроссовер)</option><option>Пикап</option><option>Минивэн</option><option>Микроавтобус</option><option>Фургон</option><option>Кемпер</option><option>Другой</select></div><div class="form-group"><label>Тип двигателя</label><select id="add-fuel" required><option>Бензин</option><option>Электро</option><option>Дизель</option><option>Гибрид</option><option>Газ/Бензин</option><option>Водород</option></select></div></div>
+<div class="form-row"><div class="form-group"><label>Объем двигателя</label><input id="add-engine" maxlength="10" placeholder="Например: 2.5 л" required></div><div class="form-group"><label>Мощность</label><input id="add-power" maxlength="15" placeholder="Например: 200 л.с." required></div></div>
+<div class="form-row"><div class="form-group"><label>Коробка передач</label><select id="add-transmission" required><option>Автомат</option><option>Механика</option><option>Робот</option><option>Вариатор</option><option>Полуавтомат</option></select></div><div class="form-group"><label>Привод</label><select id="add-drive" required><option>Передний</option><option>Задний</option><option>Полный (4x4)</option><option>Полный AWD</option></select></div></div>
+<div class="form-group"><label>Фото автомобиля</label><input id="add-photo" type="file" accept="image/jpeg,image/png,image/webp" onchange="handlePhotoPreview(event)" required><div class="file-hint">До 10 МБ. AI проверит наличие автомобиля.</div><div id="ai-photo-message" class="ai-message"></div><img id="photo-preview" class="photo-preview" alt="Фото"></div>
+<hr style="margin:20px 0;border:1px solid #eee">
+<div class="form-row"><div class="form-group"><label>Ваше имя</label><input id="add-name" maxlength="50" required></div><div class="form-group"><label>Номер телефона</label><input id="add-phone" maxlength="20" required></div></div>
+<div class="form-row"><div class="form-group"><label>Район</label><select id="add-district" required><option>Сино</option><option>Исмоили Сомони</option><option>Фирдавси</option><option>Шохмансур</option></select></div><div class="form-group"><label>Место</label><select id="add-location" required><option>82 мкр</option><option>33 мкр</option><option>46 мкр</option><option>61 мкр</option><option>Зарафшон</option><option>Гипрозем</option><option>Корвон</option><option>Садоводческий</option><option>Центр Душанбе</option><option>Рудаки</option><option>Айни</option><option>Карабаева</option><option>Джаббора Расулова</option><option>Шерози</option><option>Другое</option></select></div></div>
+<div class="form-group"><label>Улица / точный адрес</label><input id="add-address" maxlength="150" placeholder="Например: ул. Айни 20" required></div>
+<button id="submit-btn" class="btn" type="submit" style="width:100%;padding:15px;font-size:18px">Опубликовать объявление</button><div id="publish-message" class="publish-message"></div>
+</form></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import {getFirestore,collection,doc,getDoc,setDoc,addDoc,getDocs,deleteDoc} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyDoKomWAvc9lSm4GloeMaYxMvQ3xmPxhxM",
+  authDomain:"avtorynokdushanbe.firebaseapp.com",
+  projectId:"avtorynokdushanbe",
+  storageBucket:"avtorynokdushanbe.firebasestorage.app",
+  messagingSenderId:"621985271039",
+  appId:"1:621985271039:web:efdffc310cd1fd487510ca",
+  measurementId:"G-YL4X6XHP67"
+};
+
+const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);
+let currentUser=null,userProfile=null,sharedCars=[],aiModel=null,aiLoadingPromise=null;
+
+const carModels={
+"Toyota":["Camry","Corolla","RAV4","Land Cruiser 300","Land Cruiser 200","Land Cruiser Prado","Highlander","C-HR","Avalon","Prius","Prius Prime","Yaris","Yaris Cross","Venza","Sienna","Supra","GR86","Tundra","Tacoma","4Runner","Sequoia","Crown"],
+"Mercedes-Benz":["A-Class","B-Class","C-Class","E-Class E200","E-Class E300","E-Class E53 AMG","S-Class S500","S-Class S580","CLA","CLS","GLA","GLB","GLC","GLE","GLE Coupe","GLS","G-Class","G-Class AMG 63","SL","AMG GT"],
+"BMW":["1 Series","2 Series","3 Series","4 Series","5 Series","6 Series","7 Series","8 Series","X1","X2","X3","X4","X5","X6","X7","XM","Z4","M2","M3","M4","M5","M8"],
+"Opel":["Astra","Corsa","Zafira","Vectra","Insignia","Mokka","Grandland","Crossland","Frontera"],
+"Hyundai":["Sonata","Elantra","Tucson","Santa Fe","Palisade","Creta","Accent","i10","i20","i30","Kona","Ioniq","Ioniq 5","Ioniq 6","Staria"],
+"Honda":["Civic","Accord","CR-V","HR-V","ZR-V","Pilot","Passport","Odyssey","Fit","City","Prelude"],
+"Land Rover":["Range Rover","Range Rover Sport","Range Rover Vogue","Range Rover Evoque","Range Rover Velar","Discovery","Discovery Sport","Defender"],
+"Lamborghini":["Urus","Urus S","Urus Performante","Huracan","Huracan EVO","Huracan STO","Aventador","Revuelto","Temerario","Gallardo"],
+"BYD":["Song Plus","Song Pro","Song L","Han EV","Tang EV","Seal","Seal U","Dolphin","Dolphin Mini","Atto 3","Qin Plus","Qin L","Destroyer 05","Frigate 07","Seagull","Shark"],
+"Zeekr":["001","007","009","X","7X","009 Grand","Mix","001 FR"],
+"Audi":["A1","A3","A4","A5","A6","A7","A8","Q2","Q3","Q4 e-tron","Q5","Q6","Q7","Q8","e-tron GT","RS3","RS4","RS5","RS6","RS7","R8"],
+"Lexus":["IS","ES","GS","LS","UX","NX","RX","GX","LX","RC","LC","LM"],
+"Nissan":["Almera","Altima","Sentra","Maxima","Teana","Qashqai","X-Trail","Pathfinder","Patrol","Murano","Juke","Note","Leaf","370Z","GT-R"],
+"Mazda":["Mazda 2","Mazda 3","Mazda 6","CX-3","CX-30","CX-5","CX-50","CX-60","CX-70","CX-80","CX-90","MX-5","RX-8"],
+"Kia":["Rio","Cerato","K3","K5","K8","K9","Soul","Seltos","Sportage","Sorento","Telluride","Carnival","EV3","EV6","EV9","Stinger"],
+"Ford":["Fiesta","Focus","Mondeo","Fusion","Taurus","Mustang","Explorer","Escape","Kuga","Bronco","Bronco Sport","Edge","Expedition","Ranger","F-150","Maverick"],
+"Volkswagen":["Polo","Golf","Jetta","Passat","Arteon","T-Roc","T-Cross","Tiguan","Touareg","Teramont","ID.3","ID.4","ID.5","ID.6","ID.7"],
+"Chevrolet":["Spark","Aveo","Cruze","Malibu","Impala","Onix","Cobalt","Nexia","Tracker","Trailblazer","Equinox","Traverse","Tahoe","Suburban","Camaro","Corvette","Silverado"],
+"Subaru":["Impreza","Legacy","WRX","BRZ","Forester","Outback","Crosstrek","Ascent","Levorg"],
+"Mitsubishi":["Lancer","Galant","ASX","Outlander","Outlander Sport","Pajero","Pajero Sport","Eclipse Cross","Delica"],
+"Volvo":["S60","S90","V60","V90","XC40","XC60","XC90","EX30","EX40","EX90"],
+"Porsche":["718 Cayman","718 Boxster","911 Carrera","911 Turbo","911 GT3","Panamera","Macan","Cayenne","Taycan"],
+"Tesla":["Model 3","Model S","Model X","Model Y","Cybertruck","Roadster"],
+"Infiniti":["Q30","Q50","Q60","QX30","QX50","QX55","QX60","QX80"],
+"Chery":["Tiggo 4","Tiggo 7","Tiggo 8","Tiggo 8 Pro","Tiggo 9","Arrizo 5","Arrizo 8","Omoda 5","Omoda C5"],
+"Geely":["Emgrand","Coolray","Atlas","Monjaro","Tugella","Okavango","Preface","Galaxy E5","Galaxy L7"],
+"Haval":["Jolion","F7","F7x","H6","H9","Dargo","M6","Big Dog"],
+"Jetour":["X70","X70 Plus","X90","X90 Plus","Dashing","Traveller","T2"],
+"Changan":["Alsvin","Eado","CS35 Plus","CS55 Plus","CS75 Plus","UNI-T","UNI-K","UNI-V","Deepal S07","Deepal L07"],
+"Exeed":["LX","TXL","VX","RX","Sterra ES","Sterra ET"],
+"JAC":["J4","J7","JS3","JS4","JS6","JS8","T6","T8"],
+"FAW":["Bestune B70","Bestune T55","Bestune T77","Bestune T99","Hongqi H5","Hongqi H6","Hongqi HS5","Hongqi HS7"],
+"Hongqi":["H5","H6","H9","HS3","HS5","HS7","E-HS9","L5"]
+};
+
+const defaultCars=[
+{id:1,brand:"Toyota",model:"Camry",price:350000,year:2023,body:"Легковая (Седан)",fuel:"Бензин",engine:"2.5 л",power:"206 л.с.",transmission:"Автомат",drive:"Передний",img:"https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800",isDealership:true,seller:"Тойота Центр Таджикистан",phone:"+992 44 600 8888",district:"Сино",location:"82 мкр",address:"Хувайдуллоева 47/1"},
+{id:2,brand:"Toyota",model:"Land Cruiser 300",price:1200000,year:2023,body:"Внедорожник (Джип)",fuel:"Бензин",engine:"3.5 л",power:"415 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800",isDealership:true,seller:"Тойота Центр Таджикистан",phone:"+992 44 600 8888",district:"Сино",location:"82 мкр",address:"Хувайдуллоева 47/1"},
+{id:3,brand:"Toyota",model:"RAV4",price:420000,year:2022,body:"Внедорожник (Кроссовер)",fuel:"Бензин",engine:"2.0 л",power:"149 л.с.",transmission:"Вариатор",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800",isDealership:true,seller:"Тойота Центр Таджикистан",phone:"+992 44 600 8888",district:"Сино",location:"33 мкр",address:"Хувайдуллоева 47/1"},
+{id:4,brand:"Toyota",model:"Corolla",price:250000,year:2021,body:"Легковая (Седан)",fuel:"Гибрид",engine:"1.8 л",power:"122 л.с.",transmission:"Вариатор",drive:"Передний",img:"https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800",isDealership:true,seller:"Тойота Центр Таджикистан",phone:"+992 44 600 8888",district:"Исмоили Сомони",location:"Центр Душанбе",address:"Хувайдуллоева 47/1"},
+{id:5,brand:"Toyota",model:"Highlander",price:580000,year:2022,body:"Внедорожник (Кроссовер)",fuel:"Бензин",engine:"3.5 л",power:"295 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800",isDealership:true,seller:"Тойота Центр Таджикистан",phone:"+992 44 600 8888",district:"Исмоили Сомони",location:"Рудаки",address:"Хувайдуллоева 47/1"},
+{id:6,brand:"Hyundai",model:"Sonata",price:340000,year:2023,body:"Легковая (Седан)",fuel:"Бензин",engine:"2.5 л",power:"180 л.с.",transmission:"Автомат",drive:"Передний",img:"https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800",isDealership:true,seller:"Hyundai Auto Tajikistan",phone:"+992 44 630 0000",district:"Фирдавси",location:"Шерози",address:"пр. С. Шерози 11"},
+{id:7,brand:"Hyundai",model:"Tucson",price:380000,year:2023,body:"Внедорожник (Кроссовер)",fuel:"Бензин",engine:"2.0 л",power:"150 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",isDealership:true,seller:"Hyundai Auto Tajikistan",phone:"+992 44 630 0000",district:"Фирдавси",location:"Гипрозем",address:"пр. С. Шерози 11"},
+{id:8,brand:"Hyundai",model:"Elantra",price:290000,year:2022,body:"Легковая (Седан)",fuel:"Бензин",engine:"1.6 л",power:"128 л.с.",transmission:"Автомат",drive:"Передний",img:"https://images.unsplash.com/photo-1541348263662-e08266f92f3a?w=800",isDealership:true,seller:"Hyundai Auto Tajikistan",phone:"+992 44 630 0000",district:"Фирдавси",location:"33 мкр",address:"пр. С. Шерози 11"},
+{id:9,brand:"BYD",model:"Song Plus",price:320000,year:2023,body:"Внедорожник (Кроссовер)",fuel:"Электро",engine:"Электродвигатель",power:"218 л.с.",transmission:"Автомат",drive:"Передний",img:"https://images.unsplash.com/photo-1563720223185-11003d516935?w=800",isDealership:true,seller:"BYD Tajikistan",phone:"+992 90 111 2233",district:"Шохмансур",location:"Айни",address:"ул. Айни"},
+{id:10,brand:"BYD",model:"Han EV",price:450000,year:2023,body:"Легковая (Седан)",fuel:"Электро",engine:"Электродвигатель",power:"494 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800",isDealership:true,seller:"BYD Tajikistan",phone:"+992 90 111 2233",district:"Шохмансур",location:"Айни",address:"ул. Айни"},
+{id:11,brand:"Mercedes-Benz",model:"G-Class AMG 63",price:1800000,year:2022,body:"Внедорожник (Джип)",fuel:"Бензин",engine:"4.0 л",power:"585 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?w=800",isDealership:true,seller:"Taj Motors Premium",phone:"+992 00 500 0000",district:"Исмоили Сомони",location:"Рудаки",address:"ул. Бохтар"},
+{id:12,brand:"BMW",model:"X5 M",price:950000,year:2021,body:"Внедорожник (Кроссовер)",fuel:"Бензин",engine:"4.4 л",power:"625 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",isDealership:true,seller:"Автоцентр Рахш",phone:"+992 37 222 3344",district:"Фирдавси",location:"Карабаева",address:"ул. Н. Карабаева"},
+{id:13,brand:"Honda",model:"CR-V",price:380000,year:2021,body:"Внедорожник (Кроссовер)",fuel:"Бензин",engine:"2.4 л",power:"186 л.с.",transmission:"Вариатор",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1609521263047-f8d205293f24?w=800",isDealership:true,seller:"Honda Center Dushanbe",phone:"+992 92 100 2020",district:"Сино",location:"Джаббора Расулова",address:"ул. Джаббора Расулова"},
+{id:14,brand:"Opel",model:"Astra",price:180000,year:2018,body:"Хэтчбек",fuel:"Бензин",engine:"1.4 л",power:"150 л.с.",transmission:"Автомат",drive:"Передний",img:"https://images.unsplash.com/photo-1541348263662-e08266f92f3a?w=800",isDealership:true,seller:"Автосалон Лесинвест",phone:"+992 37 236 0011",district:"Шохмансур",location:"Другое",address:"ул. Каххарова"},
+{id:15,brand:"Lamborghini",model:"Urus",price:3500000,year:2022,body:"Внедорожник (Кроссовер)",fuel:"Бензин",engine:"4.0 л",power:"650 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=800",isDealership:true,seller:"Exclusive Auto Dushanbe",phone:"+992 90 999 9999",district:"Исмоили Сомони",location:"Центр Душанбе",address:"Центр"},
+{id:16,brand:"Zeekr",model:"001",price:580000,year:2023,body:"Универсал",fuel:"Электро",engine:"Электродвигатель",power:"544 л.с.",transmission:"Автомат",drive:"Полный (4x4)",img:"https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800",isDealership:true,seller:"Eco Cars Tajikistan",phone:"+992 98 777 5555",district:"Сино",location:"Рудаки",address:"пр. Рудаки"}
+];
+
+function escapeHTML(v){return String(v??"").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));}
+function containsURL(t){return /(https?:\/\/|www\.)/i.test(t)}
+function containsBadWord(t){return ["huy","хуй","хер","пидор","pidor","лох","сука","бля","далбаеб","bot","бот","test","тест","spam","спам"].some(w=>t.toLowerCase().includes(w))}
+function showStatus(text,type){const b=document.getElementById("status-box");b.textContent=text;b.className="status show "+type}
+function hideStatus(){document.getElementById("status-box").classList.remove("show")}
+function formatLocation(c){return [c.district?c.district+" р-н":"",c.location||"",c.address||""].filter(Boolean).join(", ")||"Душанбе"}
+function getAllCars(){return [...sharedCars,...defaultCars]}
+function showAuthMessage(t,error=true){const e=document.getElementById("auth-message");e.textContent=t;e.style.color=error?"#c0392b":"#1e8449"}
+function firebaseError(e){const m={"auth/invalid-credential":"Неверный email или пароль.","auth/invalid-email":"Неверный email.","auth/email-already-in-use":"Этот email уже зарегистрирован.","auth/weak-password":"Пароль слишком слабый. Используйте минимум 6 символов.","auth/network-request-failed":"Ошибка сети. Проверьте интернет.","auth/too-many-requests":"Слишком много попыток. Попробуйте позже.","auth/missing-password":"Введите пароль.","auth/password-does-not-meet-requirements":"Пароль не соответствует требованиям Firebase.","permission-denied":"Firebase запретил операцию. Проверь Rules в Firestore.","resource-exhausted":"Файл или документ слишком большой для Firestore.","unavailable":"Firebase временно недоступен. Проверьте интернет."};return m[e.code]||e.message||"Произошла ошибка."}
+
+function initSelects(){const brands=Object.keys(carModels),filter=document.getElementById("filter-brand"),add=document.getElementById("add-brand");brands.forEach(b=>{filter.insertAdjacentHTML("beforeend",`<option value="${escapeHTML(b)}">${escapeHTML(b)}</option>`);add.insertAdjacentHTML("beforeend",`<option value="${escapeHTML(b)}">${escapeHTML(b)}</option>`)});updateModels()}
+window.updateModels=function(){const brand=document.getElementById("add-brand").value,sel=document.getElementById("add-model");sel.innerHTML="";(carModels[brand]||[]).forEach(m=>sel.insertAdjacentHTML("beforeend",`<option value="${escapeHTML(m)}">${escapeHTML(m)}</option>`))}
+
+function renderAccountArea(){const a=document.getElementById("account-area");if(!currentUser){a.innerHTML=`<button class="btn dark" onclick="switchView('auth')">👤 Войти</button>`}else{const n=escapeHTML(userProfile?.name||currentUser.displayName||currentUser.email);a.innerHTML=`<button class="account-pill" style="border:0;color:#fff;cursor:pointer" onclick="openProfile()">👤 ${n}</button>`}}
+window.requireAuthForAdd=function(){if(!currentUser){showAuthMode("login");switchView("auth");showAuthMessage("Сначала войдите или зарегистрируйтесь.",false);return}prefillSeller();switchView("add")}
+window.showAuthMode=function(mode){document.getElementById("auth-login").classList.toggle("hidden",mode!=="login");document.getElementById("auth-register").classList.toggle("hidden",mode!=="register");document.getElementById("tab-login").className=mode==="login"?"btn":"btn gray";document.getElementById("tab-register").className=mode==="register"?"btn":"btn gray";showAuthMessage("")}
+
+async function registerUser(){const name=document.getElementById("reg-name").value.trim(),phone=document.getElementById("reg-phone").value.trim(),email=document.getElementById("reg-email").value.trim(),password=document.getElementById("reg-password").value;if(!/^[A-Za-zА-Яа-яЁёІіЇїЄє\s-]{3,50}$/.test(name))return showAuthMessage("Имя должно содержать только буквы.");if(!/^[0-9+\-\s()]{7,20}$/.test(phone))return showAuthMessage("Проверьте номер телефона.");if(containsBadWord(name))return showAuthMessage("В имени есть запрещённые слова.");try{const c=await createUserWithEmailAndPassword(auth,email,password);await updateProfile(c.user,{displayName:name});await setDoc(doc(db,"users",c.user.uid),{name,phone,email,createdAt:Date.now()});showAuthMessage("Аккаунт создан.",false);switchView("home")}catch(e){showAuthMessage(firebaseError(e))}}
+async function loginUser(){const email=document.getElementById("login-email").value.trim(),password=document.getElementById("login-password").value;try{await signInWithEmailAndPassword(auth,email,password);switchView("home")}catch(e){showAuthMessage(firebaseError(e))}}
+async function resetPassword(){const email=document.getElementById("login-email").value.trim();if(!email)return showAuthMessage("Сначала введи email.");try{await sendPasswordResetEmail(auth,email);showAuthMessage("Письмо для сброса пароля отправлено.",false)}catch(e){showAuthMessage(firebaseError(e))}}
+async function logoutUser(){await signOut(auth);switchView("home")}
+window.registerUser=registerUser;window.loginUser=loginUser;window.resetPassword=resetPassword;window.logoutUser=logoutUser;
+
+async function loadProfile(user){if(!user){userProfile=null;renderAccountArea();return}const s=await getDoc(doc(db,"users",user.uid));if(s.exists())userProfile=s.data();else userProfile={name:user.displayName||"",phone:"",email:user.email||""};renderAccountArea();prefillSeller()}
+function prefillSeller(){if(!currentUser)return;document.getElementById("add-name").value=userProfile?.name||currentUser.displayName||"";document.getElementById("add-phone").value=userProfile?.phone||""}
+window.openProfile=function(){if(!currentUser)return;document.getElementById("profile-name").value=userProfile?.name||currentUser.displayName||"";document.getElementById("profile-phone").value=userProfile?.phone||"";document.getElementById("profile-email").value=currentUser.email||"";document.getElementById("profile-message").textContent="";document.getElementById("my-count").textContent=`Ваших объявлений: ${sharedCars.filter(c=>c.ownerUid===currentUser.uid).length}`;switchView("profile")}
+window.saveProfile=async function(){if(!currentUser)return;const name=document.getElementById("profile-name").value.trim(),phone=document.getElementById("profile-phone").value.trim();if(!/^[A-Za-zА-Яа-яЁёІіЇїЄє\s-]{3,50}$/.test(name))return setProfileMsg("Имя должно содержать только буквы.",true);if(!/^[0-9+\-\s()]{7,20}$/.test(phone))return setProfileMsg("Проверьте номер телефона.",true);try{await updateProfile(currentUser,{displayName:name});await setDoc(doc(db,"users",currentUser.uid),{name,phone,email:currentUser.email},{merge:true});userProfile={...(userProfile||{}),name,phone,email:currentUser.email};renderAccountArea();prefillSeller();setProfileMsg("Профиль сохранён.",false);renderCars()}catch(e){setProfileMsg(firebaseError(e),true)}}
+function setProfileMsg(t,err){const e=document.getElementById("profile-message");e.textContent=t;e.style.color=err?"#c0392b":"#1e8449"}
+
+async function loadCars(){try{const snap=await getDocs(collection(db,"cars"));sharedCars=snap.docs.map(d=>({id:d.id,...d.data(),isDealership:false}));sharedCars.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));renderCars()}catch(e){console.error(e);document.getElementById("car-list").innerHTML=`<div class="storage-error"><h3>Не удалось загрузить объявления</h3><p style="margin-top:8px">${escapeHTML(firebaseError(e))}</p></div>`}}
+window.renderCars=function(){const list=document.getElementById("car-list"),brand=document.getElementById("filter-brand").value,district=document.getElementById("filter-district").value,location=document.getElementById("filter-location").value,cars=getAllCars().filter(c=>(brand==="all"||c.brand===brand)&&(district==="all"||c.district===district)&&(location==="all"||c.location===location));list.innerHTML="";if(!cars.length){list.innerHTML=`<div class="empty-state">По выбранным фильтрам машин нет.</div>`;return}cars.forEach(c=>{const badge=c.isDealership?`<span class="badge badge-dealer">✓ Автосалон</span>`:`<span class="badge badge-private">👤 Частное лицо</span>`;list.insertAdjacentHTML("beforeend",`<div class="car-card" onclick="openDetails('${String(c.id).replace(/'/g,"&#39;")}')"><img src="${escapeHTML(c.img)}" alt="${escapeHTML(c.brand+" "+c.model)}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/800x500/eeeeee/7f8c8d?text=Нет+фото'"><div class="car-info"><div class="car-price">${Number(c.price).toLocaleString("ru-RU")} TJS</div><h2 class="car-title">${escapeHTML(c.brand)} ${escapeHTML(c.model)}, ${escapeHTML(c.year)}</h2>${badge}<div style="font-size:13px;color:#555;line-height:1.5">${escapeHTML(c.body)} • ${escapeHTML(c.fuel)} • ${escapeHTML(c.transmission)}</div><div class="seller-info">${c.isDealership?"🏢":"👤"} ${escapeHTML(c.seller)}</div><div class="location-info">📍 ${escapeHTML(formatLocation(c))}</div></div></div>`)} )}
+
+window.openDetails=function(id){const c=getAllCars().find(x=>String(x.id)===String(id));if(!c)return;const badge=c.isDealership?`<span class="badge badge-dealer" style="font-size:16px">✓ Официальный автосалон</span>`:`<span class="badge badge-private" style="font-size:16px">👤 Частное лицо</span>`;const del=!c.isDealership&&currentUser&&c.ownerUid===currentUser.uid?`<button class="btn gray" type="button" onclick="deleteOneCar('${String(c.id).replace(/'/g,"&#39;")}')">🗑 Удалить это объявление</button>`:"";document.getElementById("details-content").innerHTML=`<div class="details-img"><img src="${escapeHTML(c.img)}" alt="${escapeHTML(c.model)}" onerror="this.onerror=null;this.src='https://placehold.co/800x500/eeeeee/7f8c8d?text=Нет+фото'"></div><div class="details-info"><h1>${escapeHTML(c.brand)} ${escapeHTML(c.model)}, ${escapeHTML(c.year)} год</h1><h2 class="car-price" style="font-size:36px;margin:15px 0">${Number(c.price).toLocaleString("ru-RU")} TJS</h2>${badge}<h3 style="margin-top:25px">Характеристики автомобиля:</h3><div class="specs-grid">${[["Марка",c.brand],["Модель",c.model],["Год выпуска",c.year],["Тип кузова",c.body],["Тип двигателя",c.fuel],["Объем",c.engine],["Мощность",c.power],["Коробка",c.transmission],["Привод",c.drive],["Район",c.district||"Не указан"],["Место",c.location||"Не указано"]].map(x=>`<div class="spec-item"><span class="spec-label">${escapeHTML(x[0])}</span><span class="spec-value">${escapeHTML(x[1])}</span></div>`).join("")}</div><div class="contact-box"><h3>Контакты:</h3><p style="margin:10px 0;font-size:18px"><strong>${c.isDealership?"Название автосалона":"Имя продавца"}:</strong> ${escapeHTML(c.seller)}</p><p style="margin:10px 0;font-size:16px"><strong>Осмотр машины:</strong> 📍 ${escapeHTML(formatLocation(c))}</p><h2 style="margin-top:15px;color:var(--dark)">📞 ${escapeHTML(c.phone)}</h2>${del}</div></div>`;switchView("details");window.scrollTo(0,0)};
+
+window.deleteOneCar=async function(id){if(!currentUser)return;const c=sharedCars.find(x=>String(x.id)===String(id));if(!c||c.ownerUid!==currentUser.uid)return;if(!confirm("Удалить это объявление?"))return;try{await deleteDoc(doc(db,"cars",id));sharedCars=sharedCars.filter(x=>String(x.id)!==String(id));renderCars();switchView("home");showStatus("Объявление удалено.","success");setTimeout(hideStatus,2500)}catch(e){alert(firebaseError(e))}};
+
+async function loadAI(){if(aiModel)return aiModel;if(aiLoadingPromise)return aiLoadingPromise;if(typeof cocoSsd==="undefined")throw new Error("AI-библиотека не загрузилась.");aiLoadingPromise=(async()=>{showAIMessage("🤖 Загружаю AI-проверку...","loading");aiModel=await cocoSsd.load({base:"lite_mobilenet_v2"});return aiModel})().catch(e=>{aiModel=null;throw e}).finally(()=>aiLoadingPromise=null);return aiLoadingPromise}
+function showAIMessage(t,type){const b=document.getElementById("ai-photo-message");b.textContent=t;b.className="ai-message show "+type}function hideAIMessage(){document.getElementById("ai-photo-message").classList.remove("show")}
+async function checkCarPhoto(file){const model=await loadAI();return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=async()=>{try{showAIMessage("🤖 Проверяю фотографию...","loading");const p=await model.detect(img,20,.25),v=p.filter(x=>["car","truck","bus"].includes(x.class)&&x.score>=.45);if(!v.length){showAIMessage("❌ Машина на фото не обнаружена.","error");return resolve({allowed:false})}const area=img.width*img.height;let biggest=0;v.forEach(x=>{biggest=Math.max(biggest,x.bbox[2]*x.bbox[3])});if(biggest/area<.03){showAIMessage("❌ Машина слишком маленькая на фотографии.","error");return resolve({allowed:false})}showAIMessage(`✅ Машина обнаружена (${Math.round(v[0].score*100)}%).`,"success");setTimeout(hideAIMessage,2500);resolve({allowed:true})}catch(err){reject(err)}};img.onerror=()=>reject(new Error("AI не смог открыть фотографию."));img.src=e.target.result};r.onerror=()=>reject(new Error("Не удалось прочитать фотографию."));r.readAsDataURL(file)})}
+window.handlePhotoPreview=async function(event){const file=event.target.files?.[0],preview=document.getElementById("photo-preview");if(!file){preview.classList.remove("show");preview.removeAttribute("src");return}if(!file.type.startsWith("image/")){alert("Выберите изображение.");event.target.value="";return}if(file.size>10*1024*1024){alert("Фото должно быть меньше 10 МБ.");event.target.value="";return}const r=new FileReader();r.onload=e=>{preview.src=e.target.result;preview.classList.add("show")};r.readAsDataURL(file);try{const result=await checkCarPhoto(file);if(!result.allowed){event.target.value="";preview.classList.remove("show");preview.removeAttribute("src")}}catch(e){console.error(e);event.target.value="";preview.classList.remove("show");preview.removeAttribute("src");showAIMessage("❌ Не удалось проверить фотографию AI.","error")}}
+
+function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;const mw=1000,mh=750;if(w>mw||h>mh){const k=Math.min(mw/w,mh/h);w=Math.max(1,Math.round(w*k));h=Math.max(1,Math.round(h*k))}const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;const ctx=canvas.getContext("2d");if(!ctx)return reject(new Error("Не удалось создать Canvas."));ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);let q=.68;(function again(){canvas.toBlob(blob=>{if(!blob)return reject(new Error("Не удалось сжать фотографию."));if(blob.size>350000&&q>.25){q-=.08;again()}else resolve(blob)},"image/jpeg",q)})()};img.onerror=()=>reject(new Error("Не удалось открыть фотографию."));img.src=e.target.result};r.onerror=()=>reject(new Error("Не удалось прочитать файл."));r.readAsDataURL(file)})}
+
+window.handleAddCar=async function(event){
+event.preventDefault();
+if(!currentUser){requireAuthForAdd();return}
+const button=document.getElementById("submit-btn"),message=document.getElementById("publish-message");
+button.disabled=true;message.textContent="";message.style.color="";
+try{
+const brand=document.getElementById("add-brand").value,
+model=document.getElementById("add-model").value.trim(),
+price=Number(document.getElementById("add-price").value),
+year=Number(document.getElementById("add-year").value),
+body=document.getElementById("add-body").value,
+fuel=document.getElementById("add-fuel").value,
+engineInput=document.getElementById("add-engine").value.trim(),
+powerInput=document.getElementById("add-power").value.trim(),
+transmission=document.getElementById("add-transmission").value,
+drive=document.getElementById("add-drive").value,
+seller=document.getElementById("add-name").value.trim(),
+phone=document.getElementById("add-phone").value.trim(),
+district=document.getElementById("add-district").value,
+location=document.getElementById("add-location").value,
+address=document.getElementById("add-address").value.trim(),
+photo=document.getElementById("add-photo").files[0];
+if(!photo)throw new Error("Выберите фотографию автомобиля.");
+button.textContent="🤖 Проверка фото AI...";
+const ai=await checkCarPhoto(photo);
+if(!ai.allowed)throw new Error("На фотографии не обнаружен автомобиль.");
+if(!model)throw new Error("Выберите модель автомобиля.");
+if(!Number.isInteger(price)||price<1000||price>10000000)throw new Error("Цена должна быть от 1 000 до 10 000 000 сомони.");
+const cy=new Date().getFullYear();
+if(!Number.isInteger(year)||year<1950||year>cy+1)throw new Error("Неверный год выпуска.");
+if([model,engineInput,powerInput,seller,phone,address].some(containsURL))throw new Error("В текстовых полях запрещены ссылки.");
+if(containsBadWord(model)||containsBadWord(seller))throw new Error("В имени или модели есть запрещённые слова.");
+if(!/^[A-Za-zА-Яа-яЁёІіЇїЄє\s-]{3,50}$/.test(seller))throw new Error("Имя должно содержать только буквы.");
+if(!/^[0-9+\-\s()]{7,20}$/.test(phone))throw new Error("Проверьте номер телефона.");
+if(address.length<3||address.length>150)throw new Error("Введите правильный адрес.");
+const engine=parseFloat(engineInput.replace(/,/g,".").replace(/[^\d.]/g,""));
+if(Number.isNaN(engine)||engine<0.5||engine>28)throw new Error("Объём двигателя должен быть от 0.5 до 28 литров.");
+const power=parseInt(powerInput.replace(/[^\d]/g,""),10);
+if(Number.isNaN(power)||power<20||power>2300)throw new Error("Мощность должна быть от 20 до 2300 л.с.");
+button.textContent="Сжатие фотографии...";
+const compressed=await compressImage(photo);
+if(compressed.size>380000)throw new Error("Фото получилось слишком большим. Выберите другое фото или изображение меньшего размера.");
+button.textContent="Подготовка фотографии...";
+const image=await blobToDataURL(compressed);
+if(image.length>700000)throw new Error("Сжатое фото слишком большое для базы данных.");
+button.textContent="Публикация в базе...";
+const now=Date.now();
+const car={brand,model,price,year,body,fuel,engine:engine.toFixed(1)+" л",power:power+" л.с.",transmission,drive,img:image,seller,phone,district,location,address,ownerUid:currentUser.uid,ownerEmail:currentUser.email||"",createdAt:now};
+const ref=await addDoc(collection(db,"cars"),car);
+sharedCars.unshift({id:ref.id,...car,isDealership:false});
+renderCars();
+document.getElementById("car-form").reset();
+document.getElementById("photo-preview").classList.remove("show");
+document.getElementById("photo-preview").removeAttribute("src");
+document.getElementById("add-name").value=userProfile?.name||currentUser.displayName||seller;
+document.getElementById("add-phone").value=userProfile?.phone||phone;
+hideAIMessage();updateModels();
+message.textContent="✅ Объявление опубликовано и теперь видно всем посетителям.";message.style.color="#27ae60";
+switchView("home");showStatus("✅ Машина успешно опубликована.","success");setTimeout(hideStatus,3500)
+}catch(e){console.error("ADD CAR ERROR:",e);alert("Не удалось добавить машину.\n\n"+firebaseError(e))}
+button.disabled=false;button.textContent="Опубликовать объявление";
+};
+window.switchView=function(name){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));const v=document.getElementById("view-"+name);if(v)v.classList.add("active");window.scrollTo(0,0)}
+
+onAuthStateChanged(auth,async user=>{currentUser=user;try{await loadProfile(user)}catch(e){console.error(e);userProfile=null;renderAccountArea()}if(user){prefillSeller()}else{showAuthMode("login")}renderAccountArea();if(user&&document.getElementById("view-add").classList.contains("active"))prefillSeller()});
+
+async function init(){initSelects();showStatus("Загрузка объявлений...","info");await loadCars();hideStatus()}
+init();
+</script>
+</body>
+</html>
